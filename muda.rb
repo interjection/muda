@@ -23,6 +23,7 @@ EOS
   opt :thread, "Thread ID (required)", :type => :string
   opt :board, "Board ID w/o slashes (required)", :type => :string
   opt :directory, "Directory to dump (required)", :type => :string, :default => '.'
+  opt :site, "Site to post to", :type => :string, :default => "http://8ch.net/"
   opt :name, "Name to use", :type => :string, :default => 'lazy anon'
   opt :email, "Email to use", :type => :string
   opt :delay, "Post delay in seconds", :type => :integer, :default => 17
@@ -39,6 +40,7 @@ Trollop::die :thread, "Must be set" unless opts[:thread]
 Trollop::die :board, "Must be set" unless opts[:board]
 Trollop::die :directory, "Must be set" unless opts[:directory]
 Trollop::die :body, "Cannot be set with count" if opts[:count] && opts[:body]
+Trollop::die :site, "Invalid - should be in the form of 'http://site.com/" unless opts[:site] =~ /http(s)?:\/\/.+\..+\//i
 
 #Image Loading
 puts "Searching for image files in #{opts[:directory]}"
@@ -52,7 +54,7 @@ images.shuffle if opts[:random]
 
 ##Web interaction
 agent = Mechanize.new
-target = "http://8ch.net/" + opts[:board] + "/res/" + opts[:thread] + ".html"
+target = opts[:site] + opts[:board] + "/res/" + opts[:thread] + ".html"
 
 errors = 0 #running error count
 started = false #don't wait the first time
@@ -96,10 +98,10 @@ images.each_with_index do |filename, index|
   when opts[:body]
     post_form['body'] = opts[:body]
   when opts[:count] 
-    post_form['body'] = "#{index}/#{images.size}"
+    post_form['body'] = "#{index + 1}/#{images.size}"
   end
 
-  puts "Uploading #{index}/#{images.size}: " + filename
+  puts "Uploading #{index + 1}/#{images.size}: " + filename
   post_form.file_uploads.first.file_name = filename
 
   #DO EET!
