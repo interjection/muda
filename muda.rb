@@ -59,11 +59,14 @@ target = opts[:site] + opts[:board] + "/res/" + opts[:thread] + ".html"
 errors = 0 #running error count
 started = false #don't wait the first time
 
+puts "Starting run with #{opts[:delay]} second between posts"
+puts "===== " + Time.now + " ====="
+
 begin
   agent.get(target)
   puts agent.page if opts[:debugmode]
 rescue => e
-  puts 'Cannot load the board page for the first time. Is 8chan up and are you online?'
+  puts "Cannot load the board page for the first time. Is #{opts[:site]} up and are you online?"
   Kernel.exit 1
 end
 
@@ -78,7 +81,7 @@ images.each_with_index do |filename, index|
   #This could fail if we got a bogus page
   post_form = agent.page.form_with(:name => 'post')
   if post_form.nil?
-    puts 'Cannot locate posting form - is 8chan up and are you are not banned from the board?'
+    puts "Cannot locate posting form - is #{opts[:site]} up and are you are not banned from the board?"
     errors +=1
     if errors < opts[:maxfailures]
       puts "Retrying #{opts[:maxfailures] - errors} more times"
