@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Muda by Karunamon</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Muda</h1>
+        <h2>Multiple Upload Directory Assistant - An image dumper script for imageboards</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/Karunamon/muda/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/Karunamon/muda/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/Karunamon/muda" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h2>
+<a id="muda---multiple-upload-directory-assistant-alternatively-無駄" class="anchor" href="#muda---multiple-upload-directory-assistant-alternatively-%E7%84%A1%E9%A7%84" aria-hidden="true"><span class="octicon octicon-link"></span></a>MUDA - Multiple Upload Directory Assistant (alternatively: 無駄)</h2>
+
+<p>Muda is a directory dumper script originally written for 8chan. Given a directory, a thread, and a board, it will dutifully post all images in the directory automatically, leaving you to do other things.</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Ruby 2.1.x</li>
+<li>Bundler</li>
+</ul>
+
+<h2>
+<a id="instructions" class="anchor" href="#instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Instructions</h2>
+
+<ul>
+<li>Install bundler (<code>gem install bundler</code>) to manage dependencies</li>
+<li>Kick off bundler to install dependencies: <code>bundle install</code>
+</li>
+<li>In case of errors, you're probably having trouble compiling the stuff that comes with Mechanize.</li>
+<li>Run the script with the help option to see full details: <code>./muda.rb --help</code>
+</li>
+<li>Please report any bugs here :)</li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Minimum required: <code>./muda.rb --thread 123456 --board b --directory /home/anon/images</code></p>
+
+<p>Other options are available and mostly self-explanatory. Examine the output of <code>--help</code> to customize your dump by setting name, email, body text, and more.</p>
+
+<h2>
+<a id="compatibility" class="anchor" href="#compatibility" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compatibility</h2>
+
+<p>Should work with any vichan/infinite based site by default. Other sites will require mucking about with the code that locates and fills the post form.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright 2015 TKWare Enterprises</p>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at</p>
+
+<pre><code> http://www.apache.org/licenses/LICENSE-2.0
+</code></pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
