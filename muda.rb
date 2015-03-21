@@ -4,19 +4,13 @@ require 'trollop'
 require 'find'
 
 opts = Trollop::options do
-  version "muda.rb v1.0"
+  version "muda.rb v1.1"
   banner <<-EOS
 muda.rb is a simple directory dumper - give it a thread, board, and directory to dump, and it does the rest. 
 
-Things to know:
-
-* Only tested on 8chan.
-* Irresponsible use of this script is likely to get you banned.
-* For obvious reasons, will not work on boards with a captcha enabled
-* Default timeouts work reasonably well and are as low as I can get them without causing a lot of flood detections. They may change in the future.
-* You will obviously get more timeouts if you particpate in the thread you're dumping into.
-
 Usage: muda.rb [flags]
+
+Example invocation: ./muda.rb --thread 123456 --board b --directory /home/anon/images
 
 Flags are:
 EOS
@@ -32,7 +26,7 @@ EOS
   opt :maxfailures, "How many failures before giving up?", :type => :integer, :default => 20
   opt :resume, "Restart from previous aborted dump - give the number where you left off. Makes no sense if you were using random mode."
   opt :count, "Include image count (this)/(total) in each post"
-  opt :body, "Body text (incompatible with count)"
+  opt :body, "Set body text (incompatible with count)"
   opt :debugmode, "Be more verbose"
 end
 
@@ -46,7 +40,7 @@ Trollop::die :site, "Invalid - should be in the form of 'http://site.com/" unles
 puts "Searching for image files in #{opts[:directory]}"
 images = []
 Find.find(opts[:directory]) do |path|
-  images << path if path =~ /.+\.(jpg|jpeg|png|gif|bmp|tga)$/i
+  images << path if path =~ /.+\.(jpg|jpeg|png|gif|bmp)$/i
 end
 puts "Got #{images.size} images to dump"
 
@@ -54,19 +48,24 @@ images.shuffle if opts[:random]
 
 ##Web interaction
 agent = Mechanize.new
+#If you are having trouble dumping on a site that isn't 8chan, this is probably part of
+#what needs to be modified. This should be the same for all vichan boards, but it absolutely
+#won't work on Futaba-likes.
 target = opts[:site] + opts[:board] + "/res/" + opts[:thread] + ".html"
+
+puts "Destination is: #{target}" if opts[:debugmode]
 
 errors = 0 #running error count
 started = false #don't wait the first time
 
-puts "Starting run with #{opts[:delay]} second between posts"
+puts "Starting run with #{opts[:delay]} seconds between posts"
 puts "===== " + Time.now + " ====="
 
 begin
   agent.get(target)
   puts agent.page if opts[:debugmode]
 rescue => e
-  puts "Cannot load the board page for the first time. Is #{opts[:site]} up and are you online?"
+  puts "Cannot load the board page for the first time. Is #{opts[:site]} up, and are you online?"
   Kernel.exit 1
 end
 
@@ -74,14 +73,15 @@ end
 images.shift(opts[:resume] - 1) if opts[:resume]
 
 images.each_with_index do |filename, index|
-  #We get redirected to the board page with each successful post
   sleep opts[:delay] if started
   started = true
   
-  #This could fail if we got a bogus page
+  #Check for existence of the post form - this is the other thing you will probably
+  #need to modify if you're not posting on 8chan or another vichan derivative.
   post_form = agent.page.form_with(:name => 'post')
   if post_form.nil?
-    puts "Cannot locate posting form - is #{opts[:site]} up and are you are not banned from the board?"
+    puts "Cannot locate posting form - ensure that #{opts[:site]} is reachable and that you are not banned."
+    puts "Page parsed as: #{agent.page}"
     errors +=1
     if errors < opts[:maxfailures]
       puts "Retrying #{opts[:maxfailures] - errors} more times"
@@ -89,6 +89,7 @@ images.each_with_index do |filename, index|
       redo
     else
      puts "Hit max error limit! Bailing out at image #{index}, #{filename}"
+     puts "You may pick up where you left off by specifying this folder and --resume #{index} next time"
      Kernel.exit 1
     end
   end
@@ -121,6 +122,7 @@ images.each_with_index do |filename, index|
     redo
     else 
      puts "Hit max error limit! Bailing out at image #{index}, #{filename}"
+     puts "You may pick up where you left off by specifying this folder and --resume #{index} next time"
      Kernel.exit 1
     end
   end
