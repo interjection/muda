@@ -3,7 +3,7 @@ MUDA - Multiple Upload Directory Assistant (alternatively: 無駄)
 
 Muda is a directory dumper script written for 8chan and vichan derivatives.
 
-Given a directory, a thread, and a board, it will dutifully post all images in the directory automatically, leaving you free to do other things.
+Given a directory, a thread, and a board, it will dutifully post all files in the specified directory automatically, leaving you free to do other things.
 
 Requirements
 ------------
@@ -17,6 +17,7 @@ Limitations & Notes
 * For obvious reasons, muda will not work on boards with a captcha enabled.
 * Default timeouts work reasonably well for 8chan and are as low as I can get them without causing a lot of flood detections. Experiment if necessary.
 * You will obviously get more timeouts if you particpate in the thread you're dumping into.
+* Ensure that the type of files you're dumping are allowed on the board you want to dump on, otherwise you will get strange errors.
 
 Instructions
 ------------
@@ -36,6 +37,7 @@ Other options are available. Examine the output of `--help` to customize your du
  
 License
 -------
+
    Copyright 2015 TKWare Enterprises
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,5 +54,6 @@ License
    
  Name
  ----
+ 
  You thought you would find information on the name here, but instead it's me, Dio!
 
