@@ -45,7 +45,7 @@ Trollop::die :site, "Invalid - should be in the form of 'http://site.com/" unles
 Trollop::die :maxfiles, "Max files cannot be greater than five" if opts[:maxfiles] > 5
 
   #Image Loading
-  puts "Searching for #{opts[:nonimages] ? 'image' : 'ANY'} files in #{opts[:directory]}"
+  puts "Searching for #{opts[:nonimages] ? 'ANY' : 'image'} files in #{opts[:directory]}"
   files = []
   Find.find(opts[:directory]) do |path|
     if opts[:nonimages]
