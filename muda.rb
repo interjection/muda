@@ -29,10 +29,11 @@ Flags are:
   opt :userflag, "Flag to use", :type => :integer
   opt :password, "Password to use", :type => :string, :default => Array.new(8){[*'0'..'9', *'a'..'z', *'A'..'Z'].sample}.join
   opt :useragent, "User-agent to use", :type => :string, :default => "Mozilla/5.0 (Gentoo GNU/Linux 4.0; GNU/Emacs 24.5) #{version}"
-  opt :delay, "Post delay in seconds", :type => :integer, :default => 17
+  opt :delay, "Post delay in seconds", :type => :integer, :default => 20
   opt :maxfailures, "How many failures before giving up?", :type => :integer, :default => 20
   opt :errordelay, "How long to wait additionally on top of delay when an error is recieved", :type => :integer, :default => 5
   opt :site, "Site to post to", :type => :string, :default => "https://8ch.net/"
+  opt :post, "What the server is expecting instead of 'New Reply', if anything, depending on the locale e.g. Responder", :type=> :string, :default => "New Reply"
   opt :verbose, "Verbose mode"
 end
 
@@ -67,6 +68,7 @@ Trollop::die :maxfiles, "Max files cannot be greater than five" if opts[:maxfile
   posthandler = opts[:site] + "post.php"
 
   puts "Thread is: #{thread}" if opts[:verbose]
+  puts "Will restart on post #{opts[:resume] - 1}" if opts[:resume]
   puts "User-agent is #{opts[:useragent]}" if opts[:verbose]
   puts "Password is: #{opts[:password]}" if opts[:verbose]
   puts "Files per post: #{opts[:maxfiles]}" if opts[:verbose]
@@ -82,14 +84,6 @@ Trollop::die :maxfiles, "Max files cannot be greater than five" if opts[:maxfile
   puts "Starting run with #{opts[:delay]} seconds between posts"
   puts "===== " + Time.now.to_s + " ====="
 
-  begin
-    agent.get(thread)
-    puts agent.page if opts[:verbose]
-  rescue => e
-    puts "Cannot load the thread. Is #{opts[:site]} up, and are you online?"
-    Kernel.exit 1
-  end
-
   #Slice up the files array
   opts[:maxfiles] - 1 if opts[:maxfiles] > 1
   posts = files.each_slice(opts[:maxfiles]).to_a
@@ -99,6 +93,14 @@ Trollop::die :maxfiles, "Max files cannot be greater than five" if opts[:maxfile
 
   posts.each_with_index do |files, post|
     sleep opts[:delay] if started
+
+    begin
+      agent.get(thread)
+      puts agent.page if opts[:verbose]
+    rescue => e
+      puts "Cannot load the thread. Is #{opts[:site]} up, and are you online?"
+      Kernel.exit 1
+    end
 
     started = true
     upload = Hash.new
@@ -117,7 +119,7 @@ Trollop::die :maxfiles, "Max files cannot be greater than five" if opts[:maxfile
 
     postdata = Hash.new
 
-    postdata[:post] = 'New Reply'
+    postdata[:post] = opts[:post]
     postdata[:board] = opts[:board]
     postdata[:thread] = opts[:thread]
     postdata[:password] = opts[:password]
@@ -125,13 +127,17 @@ Trollop::die :maxfiles, "Max files cannot be greater than five" if opts[:maxfile
     postdata[:name] = opts[:name]
     postdata[:email] = opts[:email]
     postdata[:subject] = opts[:subject]
-    postdata[:user_flag] = opts[:userflag]
     postdata[:file] = upload["file0"]
-    postdata[:file1] = upload["file1"]
-    postdata[:file2] = upload["file2"]
-    postdata[:file3] = upload["file3"]
-    postdata[:file4] = upload["file4"]
-    postdata[:spoiler] = opts[:spoiler] if opts[:spoiler]
+
+    if opts[:maxfiles] > 1
+      postdata[:file1] = upload["file1"]
+      postdata[:file2] = upload["file2"]
+      postdata[:file3] = upload["file3"]
+      postdata[:file4] = upload["file4"]
+    end
+
+    postdata[:spoiler] = "on" if opts[:spoiler]
+    postdata[:user_flag] = opts[:userflag] if opts[:userflag]
     postdata[:json_response] = 1
 
     puts postdata if opts[:verbose]
