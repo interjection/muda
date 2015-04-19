@@ -4,7 +4,7 @@ require 'trollop'
 require 'find'
 
 opts = Trollop::options do
-  version "muda.rb v1.2.1"
+  version "muda.rb v1.2.5"
   banner <<-EOS
 muda.rb is a simple directory dumper - give it a thread, board, and directory to dump, and it does the rest. 
 
